@@ -10,6 +10,28 @@ rss: true
 
 [Self-hosted LangSmith](/langsmith/self-hosted) is an add-on to the Enterprise plan designed for our largest, most security-conscious customers. For more details, refer to [Pricing](https://www.langchain.com/pricing). [Contact our sales team](https://www.langchain.com/contact-sales) if you want to get a license key to trial LangSmith in your environment.
 
+<Update label="2026-02-17" tags={["self-hosted"]}>
+## langsmith-auth-proxy-0.0.1
+
+- Fixed internal error details leak in 5xx responses for improved security.
+- Improved atomic data handling in ingestion processes.
+- Added UI improvements with SaveViewButton moved from the ViewDropdown and use of Modal in SaveForm.
+- Introduced a model select dropdown in the template creation flow.
+- Added duplicate URL warning in MCP server creation to prevent configuration errors.
+- Enhanced navigation in auto flow and configuration generation on the frontend.
+- Added user context enhancements for agents and sub-agents.
+- Implemented feature-flagged reads from the new code_evaluators table for advanced configuration.
+- Improved run details scrolling layout for better user experience.
+- Introduced playground client support in smith-go for enhanced model experimentation.
+- Corrected cell alignment issues in playground and experiment views.
+- Added retry logic to `gmail_apply_label` tool to enhance reliability.
+- Enabled image upload support in the platform to expand data input options.
+- Added onboarding dialog to the general-purpose agent for easier user interaction.
+- Enhanced UI with loading trigger skeletons now featuring a spinner.
+
+**Download the Helm chart:** [`langsmith-auth-proxy-0.0.1.tgz`](https://github.com/langchain-ai/helm/releases/download/langsmith-auth-proxy-0.0.1/langsmith-auth-proxy-0.0.1.tgz)
+</Update>
+
 <Update label="2026-02-14" tags={["self-hosted"]}>
 ## langsmith-0.13.13
 
