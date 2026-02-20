@@ -1,0 +1,219 @@
+---
+title: Trace LiteLLM applications
+sidebarTitle: LiteLLM
+---
+
+
+[LiteLLM](https://www.litellm.ai/) is a unified interface for calling LLM providers using a consistent OpenAI-compatible API. You can use LiteLLM either:
+
+- As a Python SDK embedded in your application, or
+- As a proxy server exposing an OpenAI-compatible endpoint.
+
+This guide shows how to trace LiteLLM calls with LangSmith, both when using the Python SDK and when using the LiteLLM proxy.
+
+## Installation
+
+Install the following for either using the LiteLLM Python SDK or LiteLLM Proxy:
+
+<CodeGroup>
+
+```bash Python SDK
+# Also install openai to use OpenAI-compatible clients
+pip install litellm langsmith
+```
+
+```bash Proxy usage
+npm install openai langsmith
+```
+
+</CodeGroup>
+
+## Setup
+
+Set the following environment variables to enable LangSmith tracing for LiteLLM Python SDK usage:
+
+```bash
+export LANGSMITH_API_KEY="your_api_key"
+export LANGSMITH_PROJECT="litellm-integration"
+```
+Create LangSmith [API keys](/langsmith/create-account-api-key) in the [LangSmith UI](https://smith.langchain.com).
+
+Depending on what provider you're using, you'll also need to set API keys:
+
+```bash
+export OPENAI_API_KEY="your_openai_key"
+```
+
+If you're using the LiteLLM proxy, configure its [environment separately as needed].
+
+## Use the LiteLLM Python SDK
+
+LiteLLM supports two ways to send traces to LangSmith:
+
+- Using LiteLLM’s built-in [`langsmith` callback](https://docs.litellm.ai/docs/observability/callbacks).
+- Enabling LangSmith SDK tracing with `LANGSMITH_TRACING=true`.
+
+These mechanisms operate at different layers.
+
+- The LiteLLM `langsmith` callback logs model calls directly from LiteLLM. This is recommended when you want to trace LiteLLM requests specifically, or when using the LiteLLM Proxy.
+- `LANGSMITH_TRACING=true` enables application-level tracing via the LangSmith SDK. This is useful when you want to trace broader business logic, multi-step pipelines, or spans created with `@traceable`.
+
+<Note>
+Avoid enabling both for the same LiteLLM calls, as this can result in duplicate traces.
+</Note>
+
+This guide uses the `langsmith` callback to log model calls, and optionally adds `@traceable` for higher-level application spans.
+
+### Log LiteLLM call with the `langsmith` callback
+
+LiteLLM includes a built-in LangSmith integration via its callback system.
+
+Enable the callback in your application:
+
+```python
+import litellm
+from litellm import completion
+
+# Enable LangSmith logging for successful calls
+litellm.success_callback = ["langsmith"]
+
+response = completion(
+    model="gpt-4o",
+    messages=[
+        {"role": "user", "content": "Explain observability in LLM systems."}
+    ],
+)
+
+print(response["choices"][0]["message"]["content"])
+```
+With:
+
+- `LANGSMITH_API_KEY`
+- `LANGSMITH_PROJECT`
+
+set in your environment, LiteLLM will send LLM request/response data directly to LangSmith.
+
+This will log:
+
+- Model name
+- Input messages
+- Output
+- Token usage (when available)
+- Errors (if configured with failure callbacks)
+
+This is the recommended setup if you want to trace LiteLLM calls specifically.
+
+### Add higher-level spans with `@traceable`
+
+If your application has multiple steps (retrieval, tool use, multiple model calls), you may want structured traces around your business logic.
+
+Use the LangSmith `@traceable` decorator:
+
+```python
+from langsmith import traceable
+import litellm
+from litellm import completion
+
+litellm.success_callback = ["langsmith"]
+
+@traceable(name="Generate Answer")
+def generate_answer(question: str):
+    return completion(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": question}],
+    )
+
+response = generate_answer(
+    "Why is tracing important in production LLM apps?"
+)
+
+print(response["choices"][0]["message"]["content"])
+```
+
+This example:
+
+- `litellm.success_callback = ["langsmith"]` logs the LLM call.
+- `@traceable` creates a parent span for your application logic.
+
+## Use the LiteLLM Proxy
+
+The LiteLLM proxy runs as a standalone server and exposes an OpenAI-compatible API.
+
+To have the proxy log requests directly to LangSmith, configure the callback in `config.yaml`. As an example:
+
+```yaml
+model_list:
+  - model_name: gpt-4o
+    litellm_params:
+      model: openai/gpt-4o
+
+litellm_settings:
+  callbacks: ["langsmith"]
+```
+
+Set environment variables in the proxy environment:
+
+```bash
+export LANGSMITH_API_KEY="your_api_key"
+export LANGSMITH_PROJECT="litellm-proxy"
+```
+
+Start the proxy:
+
+```bash
+litellm --config config.yaml
+```
+
+By default, it runs at http://localhost:4000/v1. Your application then calls it using an OpenAI-compatible client. Tracing happens in your application, not inside the proxy.
+
+<Note>
+The LiteLLM proxy runs as a separate service. If you enable LangSmith tracing at the proxy level, you must configure `LANGSMITH_API_KEY` and related environment variables in the proxy’s runtime environment. These settings are not shared with your application process.
+</Note>
+
+<CodeGroup>
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:4000/v1",
+    api_key="anything"  # proxy may require a key
+)
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "user", "content": "What is LiteLLM?"}
+    ],
+)
+
+print(response.choices[0].message.content)
+```
+
+```javascript JavaScript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "anything",
+  baseURL: "http://localhost:4000/v1",
+});
+
+const response = await client.chat.completions.create({
+  model: "gpt-4o",
+  messages: [
+    { role: "user", content: "Explain LiteLLM tracing." }
+  ],
+});
+
+console.log(response.choices[0].message.content);
+```
+
+With LANGSMITH_TRACING=true, this request is captured in LangSmith.
+
+</CodeGroup>
+
+## Next steps
+
+- [View traces in LangSmith](/langsmith/tracing)
+- [Add custom metadata](/langsmith/ls-metadata-parameters)
+- [Filter and sample traces](/langsmith/sample-traces)
