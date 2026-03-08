@@ -1373,6 +1373,12 @@
                       ]
                     },
                     {
+                      "group": "Protocols",
+                      "pages": [
+                        "oss/javascript/deepagents/acp"
+                      ]
+                    },
+                    {
                       "group": "Deep Agents CLI",
                       "pages": [
                         "oss/javascript/deepagents/cli/overview",
