@@ -57,11 +57,33 @@ which will output the count of daily traces by workspace ID and organization ID.
 
 ## Export usage data
 
+### Export from the UI
+
 <Note>
-Exporting usage data requires running Helm chart version 0.11.4 or later.
+The UI export requires Helm chart version 0.13.20 or later and the `organization:manage` permission.
 </Note>
 
-### Get customer information
+The simplest way to export usage data is from the LangSmith Settings UI:
+
+1. Navigate to **Settings** > **Usage and billing** > **Usage backfill**.
+2. Click **Export CSV**.
+3. A ZIP file will download containing one or more CSV files with all of your trace usage data.
+
+The export includes all trace count transactions across all workspaces and organizations. It automatically populates customer information from your license key and assigns a backfill ID and timestamp to each row for tracking. If the export contains more than 10,000 rows, it is split into multiple CSV files within the ZIP.
+
+<Note>
+The **Usage backfill** tab is only visible to users with the `organization:manage` permission whose email is in the `USAGE_EXPORT_ADMIN_EMAILS` list (or when `ORG_ADMINS_INSTALLATION_USAGE_EXPORT_ENABLED` is set to `true`).
+</Note>
+
+### Export via SQL scripts
+
+If you are running a Helm chart version older than 0.13.20, or need more control over the export process, you can use the SQL-based export scripts below.
+
+<Note>
+Exporting usage data via SQL requires running Helm chart version 0.11.4 or later.
+</Note>
+
+#### Get customer information
 
 You need to retrieve your customer information from the LangSmith API before running the export scripts. This information is required as input for the export scripts.
 
@@ -86,7 +108,7 @@ This will return a JSON response containing your customer information:
 
 Extract the `customer_id` and `customer_name` from this response to use as input for the export scripts.
 
-### Process the API response with jq
+#### Process the API response with jq
 
 You can use [jq](https://jqlang.org/download) to parse the JSON response and set bash variables for use in your scripts:
 
@@ -114,7 +136,7 @@ export CUSTOMER_ID="<id>"
 export CUSTOMER_NAME="<name>"
 ```
 
-### Initial export
+#### Initial export
 
 These scripts export usage data to a CSV for reporting to LangChain. They additionally track the export by assigning a backfill ID and timestamp.
 
@@ -145,7 +167,7 @@ sh run_support_query_pg.sh <postgres_url> \
   -v customer_name=$CUSTOMER_NAME
 ```
 
-### Status update
+#### Status update
 
 These scripts update the status of usage events in your installation to reflect that the events have been successfully processed by LangChain.
 
