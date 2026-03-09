@@ -152,6 +152,26 @@ These can be used directly using the `Makefile` or via the `docs` CLI tool:
 * **`docs build`** - Build documentation files
   * `--watch` - Watch for file changes after building
 
+## Linting
+
+After running `make install`, you can use `make lint_prose` to ensure your writing meets our style guide rules.
+
+You can also follow these steps to enable `vale` with VS code or Cursor:
+
+1. Install the [vale extension](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server)
+1. Navigate to the vale extension settings:
+   - Specify the absolute path to the `.vale.ini` file for `Vale CLI: Config`. The file is in the root of the repo.
+   - Set the min alert level to `suggestion` - a lot of the rules are coded as suggestions.
+   - Specify the path to your vale installation. To find this path run `where vale` in your terminal and copy the path. This path can't include any spaces before or after the path.
+
+If you cannot use the VSCode UI to configure vale you will need to add these settings to your `settings.json`:
+
+```json
+    "vale.valeCLI.config": "/path/to/your/.vale.ini",
+    "vale.valeCLI.minAlertLevel": "suggestion",
+    "vale.valeCLI.path": "/usr/local/bin/vale",
+```
+
 ## Troubleshooting
 
 ### General Mintlify errors
