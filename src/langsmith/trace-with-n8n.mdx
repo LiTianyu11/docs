@@ -1,0 +1,56 @@
+---
+title: Trace n8n workflows
+sidebarTitle: n8n
+description: Learn how to trace n8n AI workflows in LangSmith.
+---
+
+[n8n](https://n8n.io/) is a workflow automation platform that includes advanced AI capabilities built on LangChain. n8n has a native LangSmith integration that lets you send traces from your AI workflows to LangSmith for debugging, evaluation, and observability.
+
+## Prerequisites
+
+- A [LangSmith account](https://smith.langchain.com/) and API key
+- An n8n instance (Cloud or self-hosted)
+
+## Set up tracing
+
+<Steps>
+<Step title="Add LangSmith credentials in n8n">
+
+1. In your n8n instance, go to **Settings > Credentials**.
+1. Select **Add Credential** and search for **LangSmith**.
+1. Enter your LangSmith API key.
+1. Select **Save**.
+
+For more details, refer to the [n8n credentials documentation](https://docs.n8n.io/credentials/add-edit-credentials/).
+
+</Step>
+<Step title="Connect LangSmith to your AI workflow">
+
+1. Open an AI workflow that uses LangChain nodes (for example, an **AI Agent** or **Basic LLM Chain** node).
+1. In the root LangChain node, find the **Connect LangSmith** option.
+1. Select your LangSmith credential.
+
+n8n automatically traces all LangChain node executions in the workflow and sends them to LangSmith.
+
+</Step>
+</Steps>
+
+## View traces in LangSmith
+
+After running your workflow:
+
+1. Open the [LangSmith UI](https://smith.langchain.com).
+1. Select your project.
+1. Locate the trace corresponding to your workflow execution.
+
+You'll be able to inspect:
+
+- LLM inputs and outputs
+- Agent execution steps
+- Tool calls and results
+- Timing and error information
+
+## Additional resources
+
+- [n8n LangSmith integration guide](https://docs.n8n.io/advanced-ai/langchain/langsmith/)
+- [n8n Advanced AI documentation](https://docs.n8n.io/advanced-ai/)
