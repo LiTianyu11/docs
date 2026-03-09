@@ -7,3 +7,5 @@ action:
 swap:
   pre-built: prebuilt
   Pre-built: Prebuilt
+  builtin: built-in
+  Builtin: Built-in
