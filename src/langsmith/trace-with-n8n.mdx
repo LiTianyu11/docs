@@ -4,51 +4,39 @@ sidebarTitle: n8n
 description: Learn how to trace n8n AI workflows in LangSmith.
 ---
 
-[n8n](https://n8n.io/) is a workflow automation platform that includes advanced AI capabilities built on LangChain. n8n has a native LangSmith integration that lets you send traces from your AI workflows to LangSmith for debugging, evaluation, and observability.
+[n8n](https://n8n.io/) is a workflow automation platform that includes advanced AI capabilities built on LangChain. You can connect your n8n instance to LangSmith to record and monitor AI workflow runs.
+
+<Note>
+LangSmith tracing is available for **self-hosted n8n instances** only.
+</Note>
 
 ## Prerequisites
 
-- A [LangSmith account](https://smith.langchain.com/) and API key
-- An n8n instance (Cloud or self-hosted)
+- A [LangSmith account](https://smith.langchain.com/) and [API key](/langsmith/create-account-api-key)
+- A self-hosted n8n instance
 
 ## Set up tracing
 
-<Steps>
-<Step title="Add LangSmith credentials in n8n">
+1. Set the following environment variables in the environment where you host your n8n instance, in the same way as the rest of your [n8n configuration](https://docs.n8n.io/hosting/configuration/configuration-methods/).
 
-1. In your n8n instance, go to **Settings > Credentials**.
-1. Select **Add Credential** and search for **LangSmith**.
-1. Enter your LangSmith API key.
-1. Select **Save**.
+   Required environment variables:
+   - `LANGCHAIN_TRACING_V2` — Set to `true` to enable tracing.
+   - `LANGCHAIN_API_KEY` — Your LangSmith API key.
 
-For more details, refer to the [n8n credentials documentation](https://docs.n8n.io/credentials/add-edit-credentials/).
+   Optional environment variables:
+   - `LANGCHAIN_ENDPOINT` — LangSmith API endpoint. Defaults to `https://api.smith.langchain.com`. Set this if using a self-hosted LangSmith instance or the EU region.
+   - `LANGCHAIN_PROJECT` — Project name for traces. Defaults to `"default"`.
+   - `LANGCHAIN_CALLBACKS_BACKGROUND` — Set to `true` for asynchronous trace upload (default), or `false` for synchronous uploads. (default: `true`)
 
-</Step>
-<Step title="Connect LangSmith to your AI workflow">
-
-1. Open an AI workflow that uses LangChain nodes (for example, an **AI Agent** or **Basic LLM Chain** node).
-1. In the root LangChain node, find the **Connect LangSmith** option.
-1. Select your LangSmith credential.
-
-n8n automatically traces all LangChain node executions in the workflow and sends them to LangSmith.
-
-</Step>
-</Steps>
+1. Restart your n8n instance for the environment variables to take effect.
 
 ## View traces in LangSmith
 
-After running your workflow:
+After running an AI workflow:
 
-1. Open the [LangSmith UI](https://smith.langchain.com).
-1. Select your project.
+1. Open [LangSmith](https://smith.langchain.com/).
+1. Select your project. If you just created your account, the `"default"` project appears after the first trace is sent.
 1. Locate the trace corresponding to your workflow execution.
-
-You'll be able to inspect:
-
-- LLM inputs and outputs
-- Agent execution steps
-- Tool calls and results
-- Timing and error information
 
 ## Additional resources
 
