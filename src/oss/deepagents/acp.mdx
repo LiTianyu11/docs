@@ -382,7 +382,7 @@ await server.start();
 
 ### Multiple agents
 
-When you define multiple agents, the client selects which one to use at session creation time by passing `configOptions.agent` in the `session/new` ACP request. If not specified, the first agent is used by default.
+When you define multiple agents, the client selects which one to use at session creation time by passing `configOptions.agent` in the `session/new` ACP request. If not specified, the client uses the first agent by default.
 
 ```typescript
 const server = new DeepAgentsServer({
