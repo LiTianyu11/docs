@@ -1,4 +1,4 @@
-.PHONY: all dev build format lint test install clean lint_md lint_md_fix lint_prose broken-links build-references preview-references format-check code-snippets test-code-samples
+.PHONY: all dev build format lint test install clean lint_md lint_md_fix lint_prose broken-links build-references preview-references format-check code-snippets test-code-samples check-cross-refs
 
 # Default target
 all: help
@@ -127,6 +127,10 @@ test-code-samples:
 	@if [ -f src/code-samples/package.json ]; then (cd src/code-samples && npm install --silent) || true; fi
 	@FILES="$(FILES)" PYTHONPATH=$(CURDIR) python scripts/test_code_samples.py
 
+# Check that all @[ref] cross-references in source files resolve against link_map.py
+check-cross-refs:
+	@PYTHONPATH=$(CURDIR) uv run python scripts/check_cross_refs.py
+
 # Reference docs commands (in reference/ subdirectory)
 build-references: check-pnpm
 	@echo "Building references..."
@@ -141,6 +145,7 @@ help:
 	@echo "  make dev                - Start development mode with file watching and mint dev"
 	@echo "  make build              - Build documentation to ./build directory"
 	@echo "  make broken-links       - Check for broken links in built documentation"
+	@echo "  make check-cross-refs   - Check for unresolved @[ref] cross-references"
 	@echo "  make build-references   - Build reference docs"
 	@echo "  make preview-references - Preview reference docs"
 	@echo "  make format             - Format code"
