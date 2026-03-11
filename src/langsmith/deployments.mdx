@@ -5,35 +5,88 @@ mode: wide
 description: Deploy and manage agents with durable execution, real-time streaming, and horizontal scaling.
 ---
 
-LangSmith Deployment is a workflow orchestration runtime purpose-built for agent workloads. It handles the infrastructure that agents need to run reliably: long-running stateful execution, human-in-the-loop pauses, real-time streaming, horizontal scaling (all with a first-class [Studio](/langsmith/studio) development environment).
-
 <Callout icon="rocket" color="#4F46E5" iconType="regular">
 **Start here if you're building or operating agent applications.** This section is about deploying **your application**. If you need to set up LangSmith infrastructure, the [Platform setup section](/langsmith/platform-setup) covers infrastructure options (cloud, hybrid, self-hosted) and setup guides.
 </Callout>
 
-A typical deployment workflow:
+LangSmith Deployment is a workflow orchestration runtime purpose-built for agent workloads. It provides the managed infrastructure agents need to run reliably in production, supporting the full lifecycle from local development to deployment. LangSmith Deployment is framework-agnostic: you can deploy agents built with LangGraph or [other frameworks](/langsmith/deploy-other-frameworks).
 
-<Steps>
-  <Step title={<a href="/langsmith/local-server">Test locally</a>}>
-    Run your application on a local development server.
-  </Step>
-  <Step title={<a href="/langsmith/application-structure">Configure app for deployment</a>}>
-    Set up dependencies, project structure, and environment configuration.
-  </Step>
-  <Step title={<a href="/langsmith/platform-setup">Choose hosting</a>}>
-    (Required for deployment) Select Cloud, Hybrid, or Self-hosted.
-  </Step>
-  <Step title="Deploy your app">
-    - [**Cloud**](/langsmith/deploy-to-cloud): Push code from a git repository
-    - [**Hybrid or Self-hosted with control plane**](/langsmith/deploy-with-control-plane): Build and push Docker images, deploy via UI
-    - [**Standalone servers**](/langsmith/deploy-standalone-server): Deploy directly without control plane
-  </Step>
-  <Step title={<a href="/langsmith/observability">Monitor & manage</a>}>
+## App development
+
+<CardGroup cols={3}>
+
+<Card
+  title="Core capabilities"
+  cta="See core features"
+  href="/langsmith/streaming"
+  icon="settings"
+>
+Streaming, human-in-the-loop, webhooks, and concurrency controls like double-texting.
+</Card>
+
+<Card
+  title="Assistants"
+  cta="Explore assistants"
+  href="/langsmith/assistants"
+  icon="user-cog"
+>
+Manage agent configurations, connect to threads, and build interactive assistants.
+</Card>
+
+<Card
+  title="Runs"
+  cta="Learn about runs"
+  href="/langsmith/background-run"
+  icon="player-play"
+>
+Execute background jobs, stateless runs, cron jobs, and manage configurable headers.
+</Card>
+
+<Card
+  title="MCP & A2A"
+  cta="Explore protocols"
+  href="/langsmith/server-mcp"
+  icon="plug"
+>
+Expose and consume tools via MCP, and connect agents using the A2A protocol.
+</Card>
+
+<Card
+  title="Studio"
+  cta="Open Studio"
+  href="/langsmith/studio"
+  icon="layout-dashboard"
+>
+Visualize graphs, inspect checkpoints, step through runs, and debug agents interactively.
+</Card>
+
+<Card
+  title="Server customization"
+  cta="Customize your server"
+  href="/langsmith/custom-routes"
+  icon="tool"
+>
+Add custom routes, middleware, lifespan hooks, encryption, and authentication.
+</Card>
+
+</CardGroup>
+
+## Agent deployment workflow
+
+<CardGroup cols={2}>
+  <Card title="1. Test locally" href="/langsmith/local-server" icon="terminal">
+    Run your app on a local development server.
+  </Card>
+  <Card title="2. Configure" href="/langsmith/application-structure" icon="file-code">
+    Set up dependencies, project structure, and environment config.
+  </Card>
+  <Card title="3. Choose hosting & deploy your agent" href="/langsmith/platform-setup" icon="rocket">
+    Select Cloud, Hybrid, or Self-hosted, then deploy via git push, Docker image, or standalone server.
+  </Card>
+  <Card title="4. Monitor" href="/langsmith/observability" icon="chart-bar">
     Track traces, alerts, and dashboards.
-  </Step>
-</Steps>
-
----
+  </Card>
+</CardGroup>
 
 ## Durable execution
 
@@ -55,7 +108,7 @@ Agents need to show their work in real time. The runtime provides [resumable str
 
 ## Studio
 
-[LangGraph Studio](/langsmith/studio) connects to any Agent Server (local or deployed) and gives you an interactive environment for developing and debugging agents. Visualize execution graphs, inspect state at any checkpoint, step through runs, modify state mid-execution, and branch to explore alternative paths.
+[Studio](/langsmith/studio) connects to any Agent Server (local or deployed) and gives you an interactive environment for developing and debugging agents. Visualize execution graphs, inspect state at any checkpoint, step through runs, modify state mid-execution, and branch to explore alternative paths.
 
 ## Agent composition
 
@@ -63,24 +116,20 @@ Agents don't run in isolation. [RemoteGraph](/langsmith/use-remote-graph) lets a
 
 Native support for [MCP](/langsmith/server-mcp) and [A2A](/langsmith/server-a2a) means your deployed agents can expose and consume tool interfaces and agent-to-agent protocols alongside the broader ecosystem.
 
----
-
 ## Deployment options
 
-- **[Cloud](/langsmith/deploy-to-cloud)**—Fully managed. Push from a git repo.
-- **[Hybrid](/langsmith/deploy-with-control-plane)**—Runs in your cloud, managed by the LangSmith [control plane](/langsmith/control-plane).
-- **[Self-hosted](/langsmith/self-hosted)**—Fully self-managed in your own infrastructure.
+- **[Cloud](/langsmith/deploy-to-cloud)**: Fully managed. Push from a git repo or use [`langgraph deploy`](/langsmith/cli#deploy).
+- **[Hybrid](/langsmith/deploy-with-control-plane)**: Runs in your cloud, managed by the LangSmith [control plane](/langsmith/control-plane).
+- **[Self-hosted](/langsmith/self-hosted)**: Fully self-managed in your own infrastructure.
 
-Same runtime, same APIs. What changes is who manages the infrastructure. See [Platform setup](/langsmith/platform-setup) for a comparison.
+Same runtime, same APIs. What changes is who manages the infrastructure. For a comparison, refer to [Platform setup](/langsmith/platform-setup).
 
----
-
-## Go deeper
+## Reference & operations
 
 ### Securing and customizing your server
 
-- [Custom auth](/langsmith/auth)—Authentication and multi-tenant access control
-- [Server customization](/langsmith/custom-routes)—Custom routes, [middleware](/langsmith/custom-middleware), [lifespan hooks](/langsmith/custom-lifespan), [encryption](/langsmith/encryption)
+- [Custom auth](/langsmith/auth): Authentication and multi-tenant access control
+- [Server customization](/langsmith/custom-routes): Custom routes, [middleware](/langsmith/custom-middleware), [lifespan hooks](/langsmith/custom-lifespan), [encryption](/langsmith/encryption)
 
 ### Operations
 
@@ -90,4 +139,4 @@ Same runtime, same APIs. What changes is who manages the infrastructure. See [Pl
 
 ### Reference
 
-- [Agent Server](/langsmith/agent-server)—Runtime architecture reference
+- [Agent Server](/langsmith/agent-server): Runtime architecture reference
