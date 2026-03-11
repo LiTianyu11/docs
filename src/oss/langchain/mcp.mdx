@@ -452,9 +452,9 @@ response = await agent.ainvoke({"messages": "what is the weather in nyc?"})
 #### Authentication
 
 :::python
-The `langchain-mcp-adapters` library uses the official [MCP SDK](https://github.com/modelcontextprotocol/python-sdk) under the hood, which allows you to provide a custom authentication mechanism by implementing the `httpx.Auth` interface.
+The `langchain-mcp-adapters` library uses the official [MCP SDK](https://github.com/modelcontextprotocol/python-sdk) under the hood. Any [`httpx.Auth`](https://www.python-httpx.org/advanced/authentication/) instance can be passed via the `auth` field on `sse` and `streamable_http` connections.
 
-```python
+```python Custom httpx.Auth
 from langchain_mcp_adapters.client import MultiServerMCPClient
 
 client = MultiServerMCPClient(
@@ -468,9 +468,56 @@ client = MultiServerMCPClient(
 )
 ```
 
+##### OAuth 2.1
 
-* [Example custom auth implementation](https://github.com/modelcontextprotocol/python-sdk/blob/main/examples/clients/simple-auth-client/mcp_simple_auth_client/main.py)
-* [Built-in OAuth flow](https://github.com/modelcontextprotocol/python-sdk/blob/main/src/mcp/client/auth/oauth2.py#L216)
+The MCP SDK ships `OAuthClientProvider`, an `httpx.Auth` implementation that handles the full OAuth 2.1 authorization code flow with PKCE and automatic token refresh. Pass it directly to the `auth` field:
+
+```python OAuth with OAuthClientProvider
+from mcp.client.auth import OAuthClientProvider, TokenStorage  # [!code highlight]
+from mcp.shared.auth import (
+    OAuthClientInformationFull,
+    OAuthClientMetadata,
+    OAuthToken,
+)
+from pydantic import AnyUrl
+from langchain_mcp_adapters.client import MultiServerMCPClient
+
+# Implement token persistence (database, file, keychain, etc.)
+class MyTokenStorage(TokenStorage):
+    async def get_tokens(self) -> OAuthToken | None: ...
+    async def set_tokens(self, tokens: OAuthToken) -> None: ...
+    async def get_client_info(self) -> OAuthClientInformationFull | None: ...
+    async def set_client_info(self, client_info: OAuthClientInformationFull) -> None: ...
+
+oauth_auth = OAuthClientProvider(  # [!code highlight]
+    server_url="https://mcp.example.com",  # [!code highlight]
+    client_metadata=OAuthClientMetadata(  # [!code highlight]
+        client_name="My LangChain App",  # [!code highlight]
+        redirect_uris=[AnyUrl("http://localhost:3000/callback")],  # [!code highlight]
+        grant_types=["authorization_code", "refresh_token"],  # [!code highlight]
+        response_types=["code"],  # [!code highlight]
+    ),  # [!code highlight]
+    storage=MyTokenStorage(),  # [!code highlight]
+    redirect_handler=my_redirect_handler,  # [!code highlight]
+    callback_handler=my_callback_handler,  # [!code highlight]
+)  # [!code highlight]
+
+client = MultiServerMCPClient(
+    {
+        "protected-server": {
+            "transport": "http",
+            "url": "https://mcp.example.com/mcp",
+            "auth": oauth_auth,  # [!code highlight]
+        }
+    }
+)
+tools = await client.get_tools()
+```
+
+<Tip>
+For a complete working example including redirect/callback handlers and in-memory token storage, see the [MCP SDK OAuth client example](https://github.com/modelcontextprotocol/python-sdk/blob/main/examples/snippets/clients/oauth_client.py).
+</Tip>
+
 :::
 
 ### stdio

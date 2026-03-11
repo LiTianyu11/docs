@@ -137,6 +137,24 @@ For remote MCP servers, set `type` to `"sse"` or `"http"` and provide a `url`:
     HTTP headers sent with every request. Commonly used for authentication.
 </ResponseField>
 
+### Authentication
+
+For servers that require a static bearer token, pass it in the `headers` field:
+
+```json title=".mcp.json"
+{
+  "mcpServers": {
+    "protected-api": {
+      "type": "http",
+      "url": "https://mcp.example.com/mcp",
+      "headers": { "Authorization": "Bearer YOUR_TOKEN" }
+    }
+  }
+}
+```
+
+For OAuth-protected servers, acquire a token externally and pass it via `headers`. The JSON config format does not support dynamic OAuth flows directly — for programmatic OAuth 2.1 with PKCE and automatic token refresh, use [`langchain-mcp-adapters` programmatically](/oss/langchain/mcp#oauth-21) with the MCP SDK's `OAuthClientProvider`.
+
 ### Server types summary
 
 | Type | Required fields | Optional fields |
