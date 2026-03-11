@@ -4,15 +4,15 @@ description: Give agents a lightweight code execution environment
 ---
 
 :::js
-An interpreter is a lightweight runtime that evaluates code on demand: the agent writes code, the interpreter runs it, and returns a result. Unlike a [terminal](/oss/deepagents/sandboxes) (which gives the agent a whole computer), an interpreter gives it a scoped environment — isolated enough to safely run untrusted logic, expressive enough for control flow, and lightweight enough to spin up per request.
+An interpreter is a lightweight runtime that evaluates code on demand: the agent writes code, the interpreter runs it, and returns a result. Unlike a [terminal](/oss/deepagents/sandboxes) (which gives the agent a whole computer), an interpreter gives it a scoped environment—isolated enough to safely run untrusted logic, expressive enough for control flow, and lightweight enough to spin up per request.
 
 For non-coding agents, an interpreter provides the ability to run logic without the capability sprawl and operational complexity of a full sandbox.
 
 ## Why interpreters
 
-**Lighter than a sandbox.** A [terminal](/oss/deepagents/sandboxes) gives the agent a full computer — a container with a filesystem, network stack, and shell. That's powerful, but it's also a large surface area to secure and operate. An interpreter is a scoped runtime specific for code execution: no network access, no filesystem (except what you bridge), no shell. There's less to lock down because there's less to expose.
+**Lighter than a sandbox.** A [terminal](/oss/deepagents/sandboxes) gives the agent a full computer—a container with a filesystem, network stack, and shell. That's powerful, but it's also a large surface area to secure and operate. An interpreter is a scoped runtime specific for code execution: no network access, no filesystem (except what you bridge), no shell. There's less to lock down because there's less to expose.
 
-**No composition tax.** Standard tool calling round-trips every result through the model: serialize into context, reason, emit the next call. Each step costs latency, inflates the context window — sometimes with thousands of rows the next step doesn't need — and adds a reasoning step. The tax grows with the number of actions. With an interpreter, the agent writes code that orchestrates multiple tool calls, handles errors, and transforms results. Intermediate results stay in the interpreter. Only the final output reaches the model.
+**No composition tax.** Standard tool calling round-trips every result through the model: serialize into context, reason, emit the next call. Each step costs latency, inflates the context window—sometimes with thousands of rows the next step doesn't need—and adds a reasoning step. The tax grows with the number of actions. With an interpreter, the agent writes code that orchestrates multiple tool calls, handles errors, and transforms results. Intermediate results stay in the interpreter. Only the final output reaches the model.
 
 ```mermaid
 graph LR
@@ -50,7 +50,7 @@ Programmatic tool calling (PTC) is the core capability that makes interpreters u
 // Inside the interpreter, the agent writes code like this:
 const urls = ["/users", "/orders", "/products"];
 
-// Fan out with Promise.all — all three calls happen in parallel
+// Fan out with Promise.all—all three calls happen in parallel
 const responses = await Promise.all(
   urls.map((u) =>
     tools.httpRequest({ url: "https://api.example.com" + u })
@@ -79,9 +79,9 @@ The code an agent writes inside the interpreter isn't just a more ergonomic way 
 
 Three patterns become available:
 
-**Programmatic tool calling** — instead of relying on the model loop to orchestrate sequential tool calls, the agent writes code that calls tools as functions, handles errors, and transforms results in a single eval.
+**Programmatic tool calling**—instead of relying on the model loop to orchestrate sequential tool calls, the agent writes code that calls tools as functions, handles errors, and transforms results in a single eval.
 
-**Delegation** — instead of relying on the model to decide when to parallelize, the agent writes the branching logic as code. When the [`task`](/oss/deepagents/subagents) tool is exposed inside the interpreter, the agent can spawn sub-agents in parallel, collect results, and aggregate programmatically:
+**Delegation**—instead of relying on the model to decide when to parallelize, the agent writes the branching logic as code. When the [`task`](/oss/deepagents/subagents) tool is exposed inside the interpreter, the agent can spawn sub-agents in parallel, collect results, and aggregate programmatically:
 
 ```typescript
 // RLM pattern: parallel sub-agent delegation from inside the interpreter
@@ -103,7 +103,7 @@ const combined = topics
 await writeFile("/research-report.md", combined);
 ```
 
-**Context management** — the agent reads from and writes to [backends]() in code. What to remember, what to discard, what to pass forward — these become explicit decisions made in code rather than accidents of the model loop.
+**Context management**—the agent reads from and writes to [backends]() in code. What to remember, what to discard, what to pass forward—these become explicit decisions made in code rather than accidents of the model loop.
 
 ## Setup
 
@@ -162,10 +162,10 @@ The interpreter is powered by [QuickJS-NG](https://github.com/nickhutchinson/nic
 
 ### Sandbox isolation
 
-- **No network access** — code inside the interpreter cannot make HTTP requests or open connections
-- **No filesystem access** — except through the bridged `readFile` and `writeFile` functions, which route through the agent's [backend](/oss/deepagents/backends)
-- **No Node.js APIs** — `process`, `require`, `fs`, `child_process` etc. are unavailable
-- **Tool access is explicit** — only tools configured via PTC are callable; everything else is unreachable
+- **No network access**—code inside the interpreter cannot make HTTP requests or open connections
+- **No filesystem access**—except through the bridged `readFile` and `writeFile` functions, which route through the agent's [backend](/oss/deepagents/backends)
+- **No Node.js APIs**—`process`, `require`, `fs`, `child_process` etc. are unavailable
+- **Tool access is explicit**—only tools configured via PTC are callable; everything else is unreachable
 
 ### TypeScript support
 
@@ -176,7 +176,7 @@ LLMs naturally generate TypeScript. Rather than requiring the model to write pur
 3. Auto-returns the last expression
 4. Wraps everything in an async IIFE for top-level `await` support
 
-If the parser fails, it falls back gracefully — the raw code is wrapped and QuickJS reports the actual syntax error.
+If the parser fails, it falls back gracefully—the raw code is wrapped and QuickJS reports the actual syntax error.
 
 ### Cross-eval state persistence
 
@@ -187,7 +187,7 @@ Variables, functions, and closures persist across `js_eval` calls within the sam
 const data = await readFile("/data.json");
 const parsed = JSON.parse(data);
 
-// Second js_eval call — `parsed` is still available
+// Second js_eval call—`parsed` is still available
 const filtered = parsed.filter((item) => item.score > 0.8);
 ```
 
