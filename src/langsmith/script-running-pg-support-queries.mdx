@@ -57,30 +57,28 @@ which will output the count of daily traces by workspace ID and organization ID.
 
 ## Export usage data
 
-### Export from the UI
+All export methods produce the same data: LangSmith trace counts, LangGraph Platform node usage, and Agent Builder run counts across all workspaces and organizations.
+
+### Export from the UI (recommended)
 
 <Note>
-The UI export requires Helm chart version 0.13.20 or later and the `organization:manage` permission.
+The UI export requires Helm chart version 0.13.25 or later and the `organization:manage` permission.
 </Note>
 
-The simplest way to export usage data is from the LangSmith Settings UI:
-
-1. Navigate to **Settings** > **Usage and billing** > **Usage backfill**.
-2. Click **Export CSV**.
-3. A ZIP file will download containing one or more CSV files with all of your trace usage data.
-
-The export includes all trace count transactions across all workspaces and organizations. It automatically populates customer information from your license key and assigns a backfill ID and timestamp to each row for tracking. If the export contains more than 10,000 rows, it is split into multiple CSV files within the ZIP.
+1. Navigate to **Settings** > **Usage and billing** > **Usage export**.
+2. Click **Export usage data**.
+3. A ZIP file containing all usage data will download.
 
 <Note>
-The **Usage backfill** tab is only visible to users with the `organization:manage` permission whose email is in the `USAGE_EXPORT_ADMIN_EMAILS` list (or when `ORG_ADMINS_INSTALLATION_USAGE_EXPORT_ENABLED` is set to `true`).
+The **Usage export** tab is only visible to users with the `organization:manage` permission whose email is in the `USAGE_EXPORT_ADMIN_EMAILS` list, or when `ORG_ADMINS_INSTALLATION_USAGE_EXPORT_ENABLED` is set to `true`.
 </Note>
 
 ### Export via API
 
-If you prefer to export usage data programmatically (for example, to automate the process), you can call the export API endpoint directly. This produces the same output as the UI export.
+If you prefer to export usage data programmatically, you can call the export API endpoint directly.
 
 <Note>
-The API export requires Helm chart version 0.13.20 or later and the `organization:manage` permission.
+The API export requires Helm chart version 0.13.25 or later and the `organization:manage` permission.
 </Note>
 
 ```bash
@@ -89,11 +87,9 @@ curl -o backfill-export.zip \
   https://<langsmith_url>/api/v1/orgs/current/usage/backfill-export
 ```
 
-The response is a ZIP file containing one or more CSV files with all trace usage data.
-
 ### Export via SQL scripts
 
-The UI and API methods above export trace usage only. To export node usage, or if you are running a Helm chart version older than 0.13.20, use the SQL-based export scripts below.
+You can also run SQL scripts directly against your PostgreSQL database to export usage data.
 
 <Note>
 Exporting usage data via SQL requires running Helm chart version 0.11.4 or later.
@@ -113,4 +109,12 @@ To export node usage:
 sh run_support_query_pg.sh <postgres_url> \
   --input support_queries/postgres/pg_usage_nodes_full_export.sql \
   --output lgp_export.csv
+```
+
+To export Agent Builder run counts:
+
+```bash
+sh run_support_query_pg.sh <postgres_url> \
+  --input support_queries/postgres/pg_usage_agent_builder_full_export.sql \
+  --output ab_export.csv
 ```
