@@ -32,6 +32,9 @@ import SandboxBasicJs from '/snippets/deepagents-sandbox-basic-js.mdx';
 - [Middleware](#middleware)
 - [Subagents](#subagents)
 - [Backends (virtual filesystems)](#backends)
+:::js
+- [Interpreters](#interpreters)
+:::
 - [Human-in-the-loop](#human-in-the-loop)
 - [Skills](#skills)
 - [Memory](#memory)
@@ -477,6 +480,27 @@ You configure sandboxes by passing a sandbox backend to `backend` when creating 
 :::
 
 For more information, see [Sandboxes](/oss/deepagents/sandboxes).
+
+:::js
+## Interpreters
+
+An interpreter gives agents a way to execute code without needing a full sandbox. The `@langchain/quickjs` package provides a sandboxed JavaScript interpreter that can write code, keep state, and optionally expose agent tools as typed async functions inside the runtime — a pattern called [programmatic tool calling](/oss/deepagents/interpreters#programmatic-tool-calling).
+
+```typescript
+import { createDeepAgent } from "deepagents";
+import { createQuickJSMiddleware } from "@langchain/quickjs";
+
+const interpreter = createQuickJSMiddleware({
+  ptc: true,
+});
+
+const agent = await createDeepAgent({
+  middleware: [interpreter],
+});
+```
+
+For more information, see [Interpreters](/oss/deepagents/interpreters).
+:::
 
 ## Human-in-the-loop
 

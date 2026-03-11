@@ -200,6 +200,7 @@ For more information, see [Long-term memory](/oss/deepagents/long-term-memory).
 
 ## Code execution
 
+:::python
 When you use a [sandbox backend](/oss/deepagents/sandboxes), the harness exposes an `execute` tool that lets the agent run shell commands in an isolated environment. This enables the agent to install dependencies, run scripts, and execute code as part of its task.
 
 **How it works:**
@@ -213,6 +214,41 @@ When you use a [sandbox backend](/oss/deepagents/sandboxes), the harness exposes
 - **Reproducibility** — Consistent execution environments across teams
 
 For setup, providers, and file transfer APIs, see [Sandboxes](/oss/deepagents/sandboxes).
+:::
+
+:::js
+Deep agents support two patterns for code execution, depending on what the agent needs:
+
+- **Terminal** ([Sandboxes](/oss/deepagents/sandboxes)) — gives the agent a full computer. A [sandbox backend](/oss/deepagents/sandboxes) exposes an `execute` tool for running shell commands in an isolated environment. Use this for coding agents that need to install dependencies, run builds, and execute scripts.
+- **Interpreter** ([Interpreters](/oss/deepagents/interpreters)) — gives the agent a scoped runtime. The interpreter middleware adds a `js_eval` tool that lets the agent write code to orchestrate tool calls, transform data, and manage control flow — without a full sandbox environment. Use this for non-coding agents that need to run logic, fan out tool calls in parallel, or delegate to sub-agents programmatically.
+
+### Terminal (sandbox backends)
+
+When you use a [sandbox backend](/oss/deepagents/sandboxes), the harness exposes an `execute` tool that lets the agent run shell commands in an isolated environment. This enables the agent to install dependencies, run scripts, and execute code as part of its task.
+
+**How it works:**
+- Sandbox backends implement the `SandboxBackendProtocol` — when detected, the harness adds the `execute` tool to the agent's available tools
+- Without a sandbox backend, the agent only has filesystem tools (`read_file`, `write_file`, etc.) and cannot run commands
+- The `execute` tool returns combined stdout/stderr, exit code, and truncates large outputs (saving to a file for the agent to read incrementally)
+
+**Why it's useful:**
+- **Security** — Code runs in isolation, protecting your host system from the agent's operations
+- **Clean environments** — Use specific dependencies or OS configurations without local setup
+- **Reproducibility** — Consistent execution environments across teams
+
+For setup, providers, and file transfer APIs, see [Sandboxes](/oss/deepagents/sandboxes).
+
+### Interpreter (middleware)
+
+The interpreter middleware (`@langchain/quickjs`) adds a `js_eval` tool powered by a WASM-sandboxed QuickJS runtime. With [programmatic tool calling](/oss/deepagents/interpreters#programmatic-tool-calling), the agent's tools become typed async functions callable inside the interpreter. Intermediate results stay in code rather than round-tripping through the model's context window.
+
+**Why it's useful:**
+- **Token efficiency** — intermediate results stay in code, only the final output reaches the model
+- **Lightweight** — runs in-process via WASM, no container or sandbox infrastructure needed
+- **Isolation** — guest code cannot reach host memory, filesystem, or network unless explicitly bridged
+
+For setup and configuration, see [Interpreters](/oss/deepagents/interpreters).
+:::
 
 ## Human-in-the-loop
 
