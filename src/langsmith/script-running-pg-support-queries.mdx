@@ -60,9 +60,10 @@ which will output the count of daily traces by workspace ID and organization ID.
 All export methods produce the same data: LangSmith trace counts, LangGraph Platform node usage, and Agent Builder run counts across all workspaces and organizations.
 
 <Note>
-The UI and API exports require the `organization:manage` permission.
+The UI and API exports require both of the following:
 
-Additionally, the caller's email must either be listed in `USAGE_EXPORT_ADMIN_EMAILS` or `ORG_ADMINS_INSTALLATION_USAGE_EXPORT_ENABLED` must be set to `true`.
+- The `organization:manage` permission.
+- The caller's email must be listed in `USAGE_EXPORT_ADMIN_EMAILS`, or `ORG_ADMINS_INSTALLATION_USAGE_EXPORT_ENABLED` must be set to `true`.
 
 ```env
 USAGE_EXPORT_ADMIN_EMAILS='["admin@example.com", "admin2@example.com"]'
