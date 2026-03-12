@@ -31,9 +31,9 @@ graph LR
   N1 --> N2
   N2 --> N3
 
-  classDef blueHighlight fill:#2563EB,stroke:#1D4ED8,color:#ffffff;
-  classDef greenHighlight fill:#16A34A,stroke:#15803D,color:#ffffff;
-  classDef orangeHighlight fill:#D97706,stroke:#B45309,color:#ffffff;
+  classDef blueHighlight fill:#DBEAFE,stroke:#2563EB,color:#1E3A8A;
+  classDef greenHighlight fill:#DCFCE7,stroke:#16A34A,color:#14532D;
+  classDef orangeHighlight fill:#FEF3C7,stroke:#D97706,color:#92400E;
   class FRONTEND blueHighlight;
   class GRAPH greenHighlight;
   class N1,N2,N3 orangeHighlight;
