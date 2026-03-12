@@ -59,30 +59,22 @@ which will output the count of daily traces by workspace ID and organization ID.
 
 All export methods produce the same data: LangSmith trace counts, LangGraph Platform node usage, and Agent Builder run counts across all workspaces and organizations.
 
-### Export from the UI (recommended)
-
 <Note>
-The UI export requires Helm chart version 0.13.25 or later and the `organization:manage` permission.
+The UI and API exports require the `organization:manage` permission. The **Usage export** tab is only visible to users whose email is in the `USAGE_EXPORT_ADMIN_EMAILS` list, or when `ORG_ADMINS_INSTALLATION_USAGE_EXPORT_ENABLED` is set to `true`.
 </Note>
+
+### Export from the UI (recommended)
 
 1. Navigate to **Settings** > **Usage and billing** > **Usage export**.
 2. Click **Export usage data**.
 3. A ZIP file containing all usage data will download.
 
-<Note>
-The **Usage export** tab is only visible to users with the `organization:manage` permission whose email is in the `USAGE_EXPORT_ADMIN_EMAILS` list, or when `ORG_ADMINS_INSTALLATION_USAGE_EXPORT_ENABLED` is set to `true`.
-</Note>
-
 ### Export via API
 
 If you prefer to export usage data programmatically, you can call the export API endpoint directly.
 
-<Note>
-The API export requires Helm chart version 0.13.25 or later and the `organization:manage` permission.
-</Note>
-
 ```bash
-curl -o backfill-export.zip \
+curl -OJ \
   -H "X-API-Key: <your_api_key>" \
   https://<langsmith_url>/api/v1/orgs/current/usage/backfill-export
 ```
