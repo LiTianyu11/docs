@@ -494,8 +494,6 @@ LINK_MAPS: list[LinkMap] = [
             "protocol": "interfaces/_langchain_langgraph-checkpoint.SerializerProtocol.html",
             "SerializerProtocol": "langchain-langgraph-checkpoint/SerializerProtocol",
             "SqliteSaver": "langchain-langgraph-checkpoint-sqlite/SqliteSaver",
-            "MongoDBSaver": "classes/_langchain_langgraph-checkpoint-mongodb.MongoDBSaver.html",
-            "RedisSaver": "classes/_langchain_langgraph-checkpoint-redis.index.RedisSaver.html",
             # LangGraph core references
             "StateGraph": "langchain-langgraph/index/StateGraph",
             "StateGraph.compile": "classes/_langchain_langgraph.index.StateGraph.html#compile",
