@@ -60,7 +60,14 @@ which will output the count of daily traces by workspace ID and organization ID.
 All export methods produce the same data: LangSmith trace counts, LangGraph Platform node usage, and Agent Builder run counts across all workspaces and organizations.
 
 <Note>
-The UI and API exports require the `organization:manage` permission. The **Usage export** tab is only visible to users whose email is in the `USAGE_EXPORT_ADMIN_EMAILS` list, or when `ORG_ADMINS_INSTALLATION_USAGE_EXPORT_ENABLED` is set to `true`.
+The UI and API exports require the `organization:manage` permission.
+
+Additionally, the caller's email must either be listed in `USAGE_EXPORT_ADMIN_EMAILS` or `ORG_ADMINS_INSTALLATION_USAGE_EXPORT_ENABLED` must be set to `true`.
+
+```env
+USAGE_EXPORT_ADMIN_EMAILS='["admin@example.com", "admin2@example.com"]'
+ORG_ADMINS_INSTALLATION_USAGE_EXPORT_ENABLED=true
+```
 </Note>
 
 ### Export from the UI (recommended)
@@ -83,11 +90,7 @@ curl -OJ \
 
 You can also run SQL scripts directly against your PostgreSQL database to export usage data.
 
-<Note>
-Exporting usage data via SQL requires running Helm chart version 0.11.4 or later.
-</Note>
-
-To export trace usage:
+To export trace usage (requires Helm chart version 0.11.4 or later):
 
 ```bash
 sh run_support_query_pg.sh <postgres_url> \
@@ -95,7 +98,7 @@ sh run_support_query_pg.sh <postgres_url> \
   --output ls_export.csv
 ```
 
-To export node usage:
+To export node usage (requires Helm chart version 0.11.4 or later):
 
 ```bash
 sh run_support_query_pg.sh <postgres_url> \
@@ -103,7 +106,7 @@ sh run_support_query_pg.sh <postgres_url> \
   --output lgp_export.csv
 ```
 
-To export Agent Builder run counts:
+To export Agent Builder run counts (requires Helm chart version 0.13.25 or later):
 
 ```bash
 sh run_support_query_pg.sh <postgres_url> \
