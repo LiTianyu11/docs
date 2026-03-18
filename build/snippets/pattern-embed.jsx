@@ -19,7 +19,14 @@ export const PatternEmbed = ({
 // src/PatternEmbed.tsx
 
 // zod-shim.ts
-var VALID_GUEST_TYPES = /* @__PURE__ */ new Set(["READY", "RESIZE", "ERROR", "RUN_STARTED", "TRACE_URL"]);
+var VALID_GUEST_TYPES = /* @__PURE__ */ new Set([
+  "READY",
+  "RESIZE",
+  "ERROR",
+  "RUN_STARTED",
+  "TRACE_URL",
+  "THREAD_CLEARED"
+]);
 function stub() {
   return {
     safeParse: (data) => ({ success: true, data }),
@@ -33,9 +40,11 @@ var z = {
   literal: (_value) => stub(),
   string: () => stub(),
   number: () => stub(),
+  boolean: () => stub(),
   enum: (_values) => stub(),
   array: (_el) => stub(),
   union: (_schemas) => stub(),
+  record: (_key, _value) => stub(),
   discriminatedUnion: (_key, _schemas) => ({
     safeParse(data) {
       if (
@@ -81,13 +90,19 @@ var UpdateCodeMessageSchema = z.object({
   files: z.array(CodeFileSchema).min(1),
   entryFile: z.string()
 });
+var TrackEventMessageSchema = z.object({
+  type: z.literal("TRACK_EVENT"),
+  name: z.string(),
+  properties: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).optional()
+});
 var HostToGuestMessageSchema = z.discriminatedUnion("type", [
   SetThemeMessageSchema,
   SetPatternMessageSchema,
   ResetMessageSchema,
   UpdateCodeMessageSchema,
   SetViewMessageSchema,
-  SetLanguageMessageSchema
+  SetLanguageMessageSchema,
+  TrackEventMessageSchema
 ]);
 var ReadyMessageSchema = z.object({
   type: z.literal("READY"),
@@ -196,6 +211,9 @@ function createPreviewHost(iframe, options) {
     },
     reset() {
       postToGuest({ type: "RESET" });
+    },
+    trackEvent(name, properties) {
+      postToGuest({ type: "TRACK_EVENT", name, properties });
     },
     onReady(callback) {
       return addListener("READY", callback);
@@ -550,15 +568,21 @@ var EMBED_CSS = `
     if (!ready || !cachedRef.current) return;
     cachedRef.current.host.setLanguage(agentLang);
   }, [agentLang, ready]);
-  const switchView = useCallback((view) => {
-    setActiveView(view);
-    if (cachedRef.current) {
-      cachedRef.current.lastView = view;
-      if (cachedRef.current.ready) {
-        cachedRef.current.host.setView(view);
+  const switchView = useCallback(
+    (view) => {
+      setActiveView(view);
+      if (cachedRef.current) {
+        cachedRef.current.lastView = view;
+        if (cachedRef.current.ready) {
+          cachedRef.current.host.setView(view);
+          if (view === "code") {
+            cachedRef.current.host.trackEvent("code_tab_clicked", { pattern });
+          }
+        }
       }
-    }
-  }, []);
+    },
+    [pattern]
+  );
   const sdkButtonRef = useRef(null);
   useEffect(() => {
     if (!sdkDropdownOpen || !sdkButtonRef.current) return;
@@ -611,6 +635,7 @@ var EMBED_CSS = `
       btn.addEventListener("click", () => {
         setSdk(value);
         setSdkDropdownOpen(false);
+        cachedRef.current?.host.trackEvent("sdk_switched", { sdk: value, pattern });
       });
       dropdown.appendChild(btn);
     }
@@ -626,7 +651,7 @@ var EMBED_CSS = `
       document.removeEventListener("mousedown", handleClose);
       dropdown.remove();
     };
-  }, [sdkDropdownOpen, sdk, effectiveTheme, setSdk]);
+  }, [sdkDropdownOpen, sdk, effectiveTheme, setSdk, pattern]);
   const handleReset = useCallback(() => {
     cachedRef.current?.host.reset();
     if (cachedRef.current?.ready) {
@@ -678,6 +703,7 @@ var EMBED_CSS = `
     aria-label="Trace"
     onClick={(e) => {
       if (!traceUrl) e.preventDefault();
+      else cachedRef.current?.host.trackEvent("trace_tab_clicked", { pattern });
     }}
     className={traceUrl ? tabTraceActiveClass : tabTraceLoadingClass}
     aria-disabled={!traceUrl}

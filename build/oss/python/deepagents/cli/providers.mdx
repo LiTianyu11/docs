@@ -61,13 +61,11 @@ Using a provider not listed here? See [Arbitrary providers](/oss/python/deepagen
 | OpenRouter | [`langchain-openrouter`](/oss/python/integrations/chat/openrouter) | `OPENROUTER_API_KEY` | ✅ |
 | LiteLLM | [`langchain-litellm`](/oss/python/integrations/chat/litellm) | Per-provider (see [docs](https://docs.litellm.ai/)) | ❌ |
 
-
-
-
-
 <Tip>
     A **[model profile](/oss/python/langchain/models#model-profiles)** is a bundle of metadata (model name, default parameters, capabilities, etc.) that ships with a provider package, largely powered by the [models.dev](https://models.dev/) project. Providers that include model profiles have their models listed automatically in the interactive `/model` switcher, subject to the [filtering criteria](#which-models-appear-in-the-switcher) (notably, `tool_calling` must be enabled). Providers without model profiles require you to specify the model name directly or add models via `config.toml`.
 </Tip>
+
+
 
 ### Switching models
 
