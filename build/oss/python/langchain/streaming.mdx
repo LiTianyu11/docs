@@ -632,8 +632,8 @@ def _render_completed_message(message: AnyMessage) -> None:
 
 
 def _render_interrupt(interrupt: Interrupt) -> None:  # [!code highlight]
-    interrupts = interrupt.value  # [!code highlight]
-    for request in interrupts["action_requests"]:  # [!code highlight]
+    action_requests = interrupt.value["action_requests"]  # [!code highlight]
+    for request in action_requests:  # [!code highlight]
         print(request["description"])  # [!code highlight]
 
 
