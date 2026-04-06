@@ -6,15 +6,22 @@ description: Learn how to customize Deep Agents with system prompts, tools, suba
 
 import ChatModelTabsDaPy from '/snippets/chat-model-tabs-da.mdx';
 import ChatModelTabsDaJs from '/snippets/chat-model-tabs-da-js.mdx';
-import HitlBasicConfig from '/snippets/hitl-basic-config.mdx';
+import HitlBasicConfigPy from '/snippets/hitl-basic-config-py.mdx';
+import HitlBasicConfigJs from '/snippets/hitl-basic-config-js.mdx';
 import SkillsUsageTabsPy from '/snippets/skills-usage-tabs-py.mdx';
 import SkillsUsageTabsJs from '/snippets/skills-usage-tabs-js.mdx';
-import BackendState from '/snippets/backend-state.mdx';
-import BackendFilesystem from '/snippets/backend-filesystem.mdx';
-import BackendLocalShell from '/snippets/backend-local-shell.mdx';
-import BackendStore from '/snippets/backend-store.mdx';
-import BackendComposite from '/snippets/backend-composite.mdx';
-import SubagentBasic from '/snippets/subagent-basic.mdx';
+import BackendStatePy from '/snippets/backend-state-py.mdx';
+import BackendStateJs from '/snippets/backend-state-js.mdx';
+import BackendFilesystemPy from '/snippets/backend-filesystem-py.mdx';
+import BackendFilesystemJs from '/snippets/backend-filesystem-js.mdx';
+import BackendLocalShellPy from '/snippets/backend-local-shell-py.mdx';
+import BackendLocalShellJs from '/snippets/backend-local-shell-js.mdx';
+import BackendStorePy from '/snippets/backend-store-py.mdx';
+import BackendStoreJs from '/snippets/backend-store-js.mdx';
+import BackendCompositePy from '/snippets/backend-composite-py.mdx';
+import BackendCompositeJs from '/snippets/backend-composite-js.mdx';
+import SubagentBasicPy from '/snippets/subagent-basic-py.mdx';
+import SubagentBasicJs from '/snippets/subagent-basic-js.mdx';
 import SandboxBasicPy from '/snippets/deepagents-sandbox-basic-py.mdx';
 import SandboxBasicJs from '/snippets/deepagents-sandbox-basic-js.mdx';
 
@@ -43,7 +50,7 @@ create_deep_agent(
 ) -> CompiledStateGraph
 ```
 
-For more information, see [`create_deep_agent`](https://reference.langchain.com/python/deepagents/graph/).
+For more information, see the [`create_deep_agent`](https://reference.langchain.com/python/deepagents/graph/create_deep_agent) API reference.
 
 
 
@@ -149,24 +156,27 @@ agent = create_deep_agent(
 
 By default, Deep Agents have access to the following [middleware](/oss/python/langchain/middleware/overview):
 
-- `TodoListMiddleware`: Tracks and manages todo lists for organizing agent tasks and work
-- `FilesystemMiddleware`: Handles file system operations such as reading, writing, and navigating directories
-- `SubAgentMiddleware`: Spawns and coordinates subagents for delegating tasks to specialized agents
-- `SummarizationMiddleware`: Condenses message history to stay within context limits when conversations grow long
-- `AnthropicPromptCachingMiddleware`: Automatic reduction of redundant token processing when using Anthropic models
-- `PatchToolCallsMiddleware`: Automatic message history fixes when tool calls are interrupted or cancelled before receiving results
+- [`TodoListMiddleware`](https://reference.langchain.com/python/langchain/agents/middleware/todo/TodoListMiddleware): Tracks and manages todo lists for organizing agent tasks and work
+- [`FilesystemMiddleware`](https://reference.langchain.com/python/deepagents/middleware/filesystem/FilesystemMiddleware): Handles file system operations such as reading, writing, and navigating directories
+- [`SubAgentMiddleware`](https://reference.langchain.com/python/deepagents/middleware/subagents/SubAgentMiddleware): Spawns and coordinates subagents for delegating tasks to specialized agents
+- [`SummarizationMiddleware`](https://reference.langchain.com/python/langchain/agents/middleware/summarization/SummarizationMiddleware): Condenses message history to stay within context limits when conversations grow long
+- [`AnthropicPromptCachingMiddleware`](https://reference.langchain.com/python/langchain-anthropic/middleware/prompt_caching/AnthropicPromptCachingMiddleware): Automatic reduction of redundant token processing when using Anthropic models
+- [`PatchToolCallsMiddleware`](https://reference.langchain.com/python/deepagents/middleware/patch_tool_calls/PatchToolCallsMiddleware): Automatic message history fixes when tool calls are interrupted or cancelled before receiving results
 
 If you are using memory, skills, or human-in-the-loop, the following middleware is also included:
 
-- `MemoryMiddleware`: Persists and retrieves conversation context across sessions when the `memory` argument is provided
-- `SkillsMiddleware`: Enables custom skills when the `skills` argument is provided
-- `HumanInTheLoopMiddleware`: Pauses for human approval or input at specified points when the `interrupt_on` argument is provided
+- [`MemoryMiddleware`](https://reference.langchain.com/python/deepagents/middleware/memory/MemoryMiddleware): Persists and retrieves conversation context across sessions when the `memory` argument is provided
+- [`SkillsMiddleware`](https://reference.langchain.com/python/deepagents/middleware/skills/SkillsMiddleware): Enables custom skills when the `skills` argument is provided
+- `HumanInTheLoopMiddleware`: Pauses for human approval or input at specified points when the `interruptOn` argument is provided
+:::
 
 ### Pre-built middleware
 
 LangChain exposes additional pre-built middleware that let you add-on various features, such as retries, fallbacks, or PII detection. See [Prebuilt middleware](/oss/python/langchain/middleware/built-in) for more.
 
-The `deepagents` library also exposes [summarization tool middleware](/oss/python/deepagents/harness#summarization), enabling agents to trigger summarization at opportune times—such as between tasks—instead of at fixed token intervals.
+The `deepagents` library also exposes [create_summarization_tool_middleware](https://reference.langchain.com/python/deepagents/middleware/summarization/create_summarization_tool_middleware), enabling agents to trigger summarization at opportune times—such as between tasks—instead of at fixed token intervals. For more detail, see [Summarization in the harness](/oss/python/deepagents/harness#summarization).
+
+
 
 
 
@@ -223,7 +233,7 @@ Graph state is scoped to a thread by design, so updates are safe under concurren
 
 **Do this:**
 
-```python
+:```python
 class CustomMiddleware(AgentMiddleware):
     def __init__(self):
         pass
@@ -231,10 +241,13 @@ class CustomMiddleware(AgentMiddleware):
     def before_agent(self, state, runtime):
         return {"x": state.get("x", 0) + 1}  # Update graph state instead
 ```
+:
+
+::
 
 Do **not** do this:
 
-```python
+:```python
 class CustomMiddleware(AgentMiddleware):
     def __init__(self):
         self.x = 1
@@ -242,8 +255,13 @@ class CustomMiddleware(AgentMiddleware):
     def before_agent(self, state, runtime):
         self.x += 1  # Mutation causes race conditions
 ```
+:
 
-Mutation in place—such as modifying `self.x` in `before_agent` or other hooks—can lead to subtle bugs and race conditions, because many operations run concurrently (subagents, parallel tools, and parallel invocations on different threads).
+::
+
+Mutation in place, such as modifying `self.x` in `before_agent` or changing other shared values in hooks, can lead to subtle bugs and race conditions because many operations run concurrently (subagents, parallel tools, and parallel invocations on different threads).
+
+
 
 For full details on extending state with custom properties, see [Custom middleware - Custom state schema](/oss/python/langchain/middleware/custom#custom-state-schema).
 If you must use mutation in custom middleware, consider what happens when subagents, parallel tools, or concurrent agent invocations run at the same time.
@@ -253,7 +271,10 @@ If you must use mutation in custom middleware, consider what happens when subage
 
 To isolate detailed work and avoid context bloat, use subagents:
 
-<SubagentBasic />
+<SubagentBasicPy />
+
+
+
 
 For more information, see [Subagents](/oss/python/deepagents/subagents).
 
@@ -263,7 +284,7 @@ For more information, see [Subagents](/oss/python/deepagents/subagents).
 
 ## Backends
 
-Deep agent tools can make use of virtual file systems to store, access, and edit files. By default, Deep Agents use a `StateBackend`.
+Deep agent tools can make use of virtual file systems to store, access, and edit files. By default, Deep Agents use a [`StateBackend`](https://reference.langchain.com/python/deepagents/backends/state/StateBackend).
 
 If you are using [skills](#skills) or [memory](#memory), you must add the expected skill or memory files to the backend before creating the agent.
 
@@ -273,7 +294,10 @@ If you are using [skills](#skills) or [memory](#memory), you must add the expect
 
         This filesystem only persists _for a single thread_.
 
-        <BackendState />
+        <BackendStatePy />
+
+
+
     </Tab>
     <Tab title="FilesystemBackend">
         The local machine's filesystem.
@@ -284,7 +308,10 @@ If you are using [skills](#skills) or [memory](#memory), you must add the expect
             For more information, see [`FilesystemBackend`](/oss/python/deepagents/backends#filesystembackend-local-disk).
         </Warning>
 
-        <BackendFilesystem />
+        <BackendFilesystemPy />
+
+
+
     </Tab>
     <Tab title="LocalShellBackend">
         A filesystem with shell execution directly on the host. Provides filesystem tools plus the `execute` tool for running commands.
@@ -295,17 +322,30 @@ If you are using [skills](#skills) or [memory](#memory), you must add the expect
             For more information, see [`LocalShellBackend`](/oss/python/deepagents/backends#localshellbackend-local-shell).
         </Warning>
 
-        <BackendLocalShell />
+        <BackendLocalShellPy />
+
+
+
     </Tab>
     <Tab title="StoreBackend">
         A filesystem that provides long-term storage that is _persisted across threads_.
 
-        <BackendStore />
+        <BackendStorePy />
+
+
+
+
+        <Tip>
+            The `namespace` parameter controls data isolation. For multi-user deployments, always set a [namespace factory](/oss/python/deepagents/backends#namespace-factories) to isolate data per user or tenant.
+        </Tip>
     </Tab>
     <Tab title="CompositeBackend">
         A flexible backend where you can specify different routes in the filesystem to point towards different backends.
 
-        <BackendComposite />
+        <BackendCompositePy />
+
+
+
     </Tab>
 </Tabs>
 
@@ -330,7 +370,10 @@ For more information, see [Sandboxes](/oss/python/deepagents/sandboxes).
 Some tool operations may be sensitive and require human approval before execution.
 You can configure the approval for each tool:
 
-<HitlBasicConfig />
+<HitlBasicConfigPy />
+
+
+
 
 You can configure interrupt for agents and subagents on tool call as well as from within tool calls.
 For more information, see [Human-in-the-loop](/oss/python/deepagents/human-in-the-loop).
